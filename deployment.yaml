@@ -1,0 +1,81 @@
+# templates/gitea-deployment.yaml
+apiVersion: v1
+kind: Service 
+metadata:
+  # (Optional) You could also template the service name!
+  name: gitea-service
+spec:
+  # Pointing to service.type in values.yaml
+  type: {{ .Values.service.type }}
+  selector:
+    app: gitea
+  ports:
+    - name: http
+      protocol: TCP
+      # Pointing to service.httpPort in values.yaml
+      port: {{ .Values.service.httpPort }}
+      targetPort: 3000
+    - name: ssh
+      protocol: TCP
+      port: {{ .Values.service.sshPort }}
+      targetPort: 22
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Pointing to deployment.name in values.yaml
+  name: {{ .Values.deployment.name }}
+spec:
+  # Pointing to deployment.replicas in values.yaml
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+        - name: gitea
+          # Combining the image repository and tag from values.yaml!
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 3000
+            - containerPort: 22
+          env:
+            - name: GITEA__database__DB_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: gitea-config
+                  key: DB_TYPE
+            - name: GITEA__database__HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gitea-config
+                  key: DB_HOST
+            - name: GITEA__database__NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
+            - name: GITEA__database__USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: GITEA__database__PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          
+          volumeMounts:
+            - name: gitea-data
+              mountPath: /data
+      volumes:
+        - name: gitea-data
+          persistentVolumeClaim:
+            claimName: gitea-pvc

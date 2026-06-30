@@ -1,0 +1,16 @@
+# Default values for gitea-chart.
+service:
+  type: ClusterIP
+  httpPort: 3000
+  sshPort: 22
+
+deployment:
+  name: gitea-deployment
+  replicas: 1
+
+image:
+  repository: gitea/gitea
+  tag: "1.21.6"
+ingress:
+  class: nginx
+  host: git.teslarez.xyz
