@@ -1,0 +1,10 @@
+apiVersion: v2
+name: cluster-monitoring
+version: 1.0.0
+description: "My Prometheus and Grafana Stack"
+
+dependencies:
+  # This tells Argo CD to pull the official Prometheus chart
+  - name: kube-prometheus-stack
+    version: "58.2.1" # The current stable version
+    repository: "[https://prometheus-community.github.io/helm-charts](https://prometheus-community.github.io/helm-charts)"
