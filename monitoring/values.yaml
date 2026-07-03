@@ -1,11 +1,13 @@
 kube-prometheus-stack:
   
   # 1. Grafana Settings
-  admin:
+  grafana:
+    # Point Grafana to the secret you manually created on the cluster
+    admin:
       existingSecret: "grafana-admin-credentials"
       userKey: admin-user
       passwordKey: admin-password
-    
+      
     # Expose Grafana to the internet
     ingress:
       enabled: true
@@ -25,7 +27,6 @@ kube-prometheus-stack:
   # 2. Prometheus Settings
   prometheus:
     prometheusSpec:
-      # Ask Rancher Local Path for a hard drive to save historical metrics
       storageSpec:
         volumeClaimTemplate:
           spec:
