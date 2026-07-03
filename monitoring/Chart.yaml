@@ -7,4 +7,4 @@ dependencies:
   # This tells Argo CD to pull the official Prometheus chart
   - name: kube-prometheus-stack
     version: "58.2.1" # The current stable version
-    repository: "[https://prometheus-community.github.io/helm-charts](https://prometheus-community.github.io/helm-charts)"
+    repository: "https://prometheus-community.github.io/helm-charts"
